@@ -1,6 +1,13 @@
 package com.example.suguoqing.coolweather;
 
+import android.util.Log;
+
+import com.example.suguoqing.coolweather.db.City;
+
 import org.junit.Test;
+import org.litepal.crud.DataSupport;
+
+import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
