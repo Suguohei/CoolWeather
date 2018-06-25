@@ -5,12 +5,17 @@ import android.text.TextUtils;
 import com.example.suguoqing.coolweather.db.City;
 import com.example.suguoqing.coolweather.db.County;
 import com.example.suguoqing.coolweather.db.Province;
+import com.example.suguoqing.coolweather.gson.Weather;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Utillity {
+
+
+
     /***
      * 解析和处理省级数据
      */
@@ -82,5 +87,24 @@ public class Utillity {
         }
         return false;
     }
+
+
+    /***
+     * 解析返回的json数据对应成weather类
+     *
+     */
+    public static Weather handleWeatherResponse(String response){
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather6");
+            String weatherContent = jsonArray.getJSONObject(0).toString();
+            return new Gson().fromJson(weatherContent,Weather.class);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
 }

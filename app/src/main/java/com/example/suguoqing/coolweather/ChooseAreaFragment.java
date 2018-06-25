@@ -2,6 +2,7 @@ package com.example.suguoqing.coolweather;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -91,6 +92,13 @@ public class ChooseAreaFragment extends Fragment {
                 }else if(currentLevel == LEVEL_CEITY){
                     selectedCity = cityList.get(position);
                     queryCounties();
+                }else if(currentLevel == LEVEL_COUNTY){
+                    String weatherid = countyList.get(position).getWeatherId();
+                    Log.d(TAG, "onItemClick: &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"+weatherid);
+                    Intent intent = new Intent(getActivity(),WeatherActivity.class);
+                    intent.putExtra("weatherid",weatherid);
+                    startActivity(intent);
+                    getActivity().finish();
                 }
             }
         });
