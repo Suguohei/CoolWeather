@@ -1,16 +1,19 @@
 package com.example.suguoqing.coolweather;
 
 import android.content.SharedPreferences;
+import android.media.Image;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.suguoqing.coolweather.gson.Daily_forecast;
 import com.example.suguoqing.coolweather.gson.Life_style;
 import com.example.suguoqing.coolweather.gson.Weather;
@@ -38,6 +41,8 @@ public class WeatherActivity extends AppCompatActivity {
     private TextView typeText;
     private TextView brfText;
     private TextView txtText;
+    //每日必应图片
+    private ImageView image;
 
 
     @Override
@@ -55,6 +60,9 @@ public class WeatherActivity extends AppCompatActivity {
         typeText = findViewById(R.id.type_text);
         brfText = findViewById(R.id.brf_text);
         txtText = findViewById(R.id.txt_text);
+        //每日必应图片
+        image = findViewById(R.id.image);
+
         //缓存
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString = prefs.getString("weather",null);
@@ -71,6 +79,53 @@ public class WeatherActivity extends AppCompatActivity {
             //根据id来请求数据
             requsetWeather(weatherid);
         }
+
+        //缓存中加载图片
+        String imageString = prefs.getString("image",null);
+        if(imageString != null){
+            //如果不为空，就从缓存中加载图片
+            Glide.with(this).load(imageString).into(image);
+
+        }else{
+            //如果为空，就从服务器加载图片
+            loadBingPic();
+        }
+    }
+
+
+    //从服务器加载图片
+    private void loadBingPic() {
+        String requsetBingPic = "http://guolin.tech/api/bing_pic";
+        HttpUtil.sendOkHttpRequest(requsetBingPic, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(WeatherActivity.this, "必应图片加载失败", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String bingPic = response.body().string();
+                //将图片写入缓存
+                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this)
+                        .edit();
+                editor.putString("image",bingPic);
+                editor.apply();
+
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Glide.with(WeatherActivity.this).load(bingPic).into(image);
+                    }
+                });
+            }
+        });
     }
 
     /*******
@@ -118,6 +173,9 @@ public class WeatherActivity extends AppCompatActivity {
                 });
             }
         });
+
+        //加载必应图片
+        loadBingPic();
 
     }
 
