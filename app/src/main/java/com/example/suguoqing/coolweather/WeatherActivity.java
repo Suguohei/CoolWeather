@@ -1,7 +1,9 @@
 package com.example.suguoqing.coolweather;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.media.Image;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -48,6 +50,12 @@ public class WeatherActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //实现状态栏和背景融合一体的效果
+        if(Build.VERSION.SDK_INT >= 21){
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
         setContentView(R.layout.activity_weather);
 
         //初始化各种控件
@@ -210,7 +218,7 @@ public class WeatherActivity extends AppCompatActivity {
         String wind_dir = weather.getNow().getWind_dir();//风向
         String wind_sc = weather.getNow().getWind_sc();//风力
         String wind_spd = weather.getNow().getWind_spd();//风速
-        degreeText.setText(tmp+"摄氏度 C");
+        degreeText.setText(tmp+"℃");
         weatherInfoText.setText(cond_txt);
 
 
