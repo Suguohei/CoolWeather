@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.media.Image;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -46,6 +47,9 @@ public class WeatherActivity extends AppCompatActivity {
     //每日必应图片
     private ImageView image;
 
+    //添加下拉刷新功能
+    private SwipeRefreshLayout swipeRefresh;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,22 +75,38 @@ public class WeatherActivity extends AppCompatActivity {
         //每日必应图片
         image = findViewById(R.id.image);
 
+        //下拉刷新功能
+        swipeRefresh = findViewById(R.id.swipe_refresh);
+        swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
+
+
         //缓存
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString = prefs.getString("weather",null);
+        //从缓存拿weatherId
+        final String weatherId;
         if(weatherString != null){
             //如果又缓存的话，就直接的从缓存中拿数据
             Weather weather = Utillity.handleWeatherResponse(weatherString);
+            weatherId = weather.getBasic().getCid();
             //显示这个weather
             showWeatherInfo(weather);
         }else {
             //如果没有缓存的话，就查询
             //这个页面是从上一个选择城市的页面跳转过来的，所以可以根据intent来获取weatherid
-            String weatherid = getIntent().getStringExtra("weatherid");
+           weatherId = getIntent().getStringExtra("weatherid");
             scrollView.setVisibility(View.INVISIBLE);
             //根据id来请求数据
-            requsetWeather(weatherid);
+            requsetWeather(weatherId);
         }
+
+        //设置下拉刷新的监听
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                requsetWeather(weatherId);
+            }
+        });
 
         //缓存中加载图片
         String imageString = prefs.getString("image",null);
@@ -153,7 +173,12 @@ public class WeatherActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         Toast.makeText(WeatherActivity.this, "获取天气失败", Toast.LENGTH_SHORT).show();
+
+                        //刷新完成
+                        swipeRefresh.setRefreshing(false);
                     }
+
+
                 });
 
             }
@@ -177,6 +202,9 @@ public class WeatherActivity extends AppCompatActivity {
                         }else {
                             Toast.makeText(WeatherActivity.this, "获取天气失败", Toast.LENGTH_SHORT).show();
                         }
+
+                        //刷新完成
+                        swipeRefresh.setRefreshing(false);
                     }
                 });
             }
@@ -222,7 +250,8 @@ public class WeatherActivity extends AppCompatActivity {
         weatherInfoText.setText(cond_txt);
 
 
-
+        //为了刷新的时候，先清空
+        forecastLayout.removeAllViews();
         //未来天气
         for(Daily_forecast forecast : weather.getForecasts()){
             View view = LayoutInflater.from(this).inflate(R.layout.forecast_item,forecastLayout,false);
