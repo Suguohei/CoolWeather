@@ -1,5 +1,6 @@
 package com.example.suguoqing.coolweather;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.Image;
@@ -24,6 +25,7 @@ import com.bumptech.glide.Glide;
 import com.example.suguoqing.coolweather.gson.Daily_forecast;
 import com.example.suguoqing.coolweather.gson.Life_style;
 import com.example.suguoqing.coolweather.gson.Weather;
+import com.example.suguoqing.coolweather.service.AutoUpdateService;
 import com.example.suguoqing.coolweather.util.HttpUtil;
 import com.example.suguoqing.coolweather.util.Utillity;
 
@@ -242,6 +244,9 @@ public class WeatherActivity extends AppCompatActivity {
      * @param weather
      */
     private void showWeatherInfo(Weather weather) {
+        Intent intent = new Intent(this, AutoUpdateService.class);
+        startService(intent);
+
         //城市信息
         String cityName = weather.getBasic().getLocation();
         String cnty = weather.getBasic().getCnty();
