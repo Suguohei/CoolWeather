@@ -5,11 +5,15 @@ import android.graphics.Color;
 import android.media.Image;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -48,7 +52,13 @@ public class WeatherActivity extends AppCompatActivity {
     private ImageView image;
 
     //添加下拉刷新功能
-    private SwipeRefreshLayout swipeRefresh;
+    public SwipeRefreshLayout swipeRefresh;
+
+    //手动选择天气
+    public DrawerLayout drawerLayout;
+
+    //按钮
+    public Button navbutton;
 
 
     @Override
@@ -78,6 +88,17 @@ public class WeatherActivity extends AppCompatActivity {
         //下拉刷新功能
         swipeRefresh = findViewById(R.id.swipe_refresh);
         swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
+
+        //
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navbutton = findViewById(R.id.nav_button);
+
+        navbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
 
 
         //缓存
@@ -160,7 +181,7 @@ public class WeatherActivity extends AppCompatActivity {
      * 根据id来请求天气信息
      * @param weatherid
      */
-    private void requsetWeather(String weatherid) {
+    public void requsetWeather(String weatherid) {
 
         String address = "https://free-api.heweather.com/s6/weather?location="+weatherid+"&key=af7488dedc3c47a39f4c643aa4eb8a69";
 

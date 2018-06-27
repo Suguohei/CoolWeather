@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.example.suguoqing.coolweather.db.City;
 import com.example.suguoqing.coolweather.db.County;
 import com.example.suguoqing.coolweather.db.Province;
+import com.example.suguoqing.coolweather.gson.Weather;
 import com.example.suguoqing.coolweather.util.HttpUtil;
 import com.example.suguoqing.coolweather.util.Utillity;
 
@@ -94,11 +95,19 @@ public class ChooseAreaFragment extends Fragment {
                     queryCounties();
                 }else if(currentLevel == LEVEL_COUNTY){
                     String weatherid = countyList.get(position).getWeatherId();
-                    Log.d(TAG, "onItemClick: &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"+weatherid);
-                    Intent intent = new Intent(getActivity(),WeatherActivity.class);
-                    intent.putExtra("weatherid",weatherid);
-                    startActivity(intent);
-                    getActivity().finish();
+                    //Log.d(TAG, "onItemClick: &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"+weatherid);
+                    if(getActivity() instanceof MainActivity){
+                        Intent intent = new Intent(getActivity(),WeatherActivity.class);
+                        intent.putExtra("weatherid",weatherid);
+                        startActivity(intent);
+                        getActivity().finish();
+                    }else if(getActivity() instanceof WeatherActivity){
+                        WeatherActivity activity = (WeatherActivity) getActivity();
+                        activity.drawerLayout.closeDrawers();
+                        activity.swipeRefresh.setRefreshing(true);
+                        activity.requsetWeather(weatherid);
+                    }
+
                 }
             }
         });
