@@ -2,9 +2,10 @@ package com.example.suguoqing.coolweather.gson;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Weather {
+public class Weather{
     private String status;
     private Basic basic;
     private Now now;

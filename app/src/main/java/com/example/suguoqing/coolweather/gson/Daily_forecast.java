@@ -1,6 +1,8 @@
 package com.example.suguoqing.coolweather.gson;
 
-public class Daily_forecast {
+import java.io.Serializable;
+
+public class Daily_forecast implements Serializable{
 
     private String cond_txt_d;
     private String date;

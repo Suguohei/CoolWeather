@@ -11,6 +11,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,6 +39,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class WeatherActivity extends AppCompatActivity {
+    private static final String TAG = "WeatherActivity";
 
     private ScrollView scrollView;
     private TextView titleCity;
@@ -184,6 +186,7 @@ public class WeatherActivity extends AppCompatActivity {
      * @param weatherid
      */
     public void requsetWeather(String weatherid) {
+        //https://free-api.heweather.com/s6/weather/forecast?
 
         String address = "https://free-api.heweather.com/s6/weather?location="+weatherid+"&key=af7488dedc3c47a39f4c643aa4eb8a69";
 
@@ -279,7 +282,7 @@ public class WeatherActivity extends AppCompatActivity {
         //为了刷新的时候，先清空
         forecastLayout.removeAllViews();
         //未来天气
-        for(Daily_forecast forecast : weather.getForecasts()){
+        for(final Daily_forecast forecast : weather.getForecasts()){
             View view = LayoutInflater.from(this).inflate(R.layout.forecast_item,forecastLayout,false);
 
             TextView dateText = view.findViewById(R.id.data_text);
@@ -291,6 +294,18 @@ public class WeatherActivity extends AppCompatActivity {
             infoText.setText(forecast.getCond_txt_d());
             maxText.setText(forecast.getTmp_max());
             minText.setText(forecast.getTmp_mix());
+            
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(WeatherActivity.this, "点击触发", Toast.LENGTH_SHORT).show();
+                    Intent intent1 = new Intent(WeatherActivity.this,Details.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("forecast",forecast);
+                    intent1.putExtras(bundle);
+                    startActivity(intent1);
+                }
+            });
 
             forecastLayout.addView(view);
         }
@@ -298,11 +313,13 @@ public class WeatherActivity extends AppCompatActivity {
         //小提示
         for(int i = 0;i<weather.getSuggestions().size();i++){
             Life_style life_style = weather.getSuggestions().get(0);
+            Log.d(TAG, "showWeatherInfo: +++++++++++"+life_style);
             String type = life_style.getType();
             String brf = life_style.getBrf();
             String txt = life_style.getTxt();
 
             typeText.setText(type);
+            //typeText.append(type);
             brfText.setText(brf);
             txtText.setText(txt);
         }
